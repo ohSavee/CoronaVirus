@@ -1,6 +1,8 @@
 import tkinter as tk
 import requests
 import datetime
+import mysql.connector
+
 
 def getCovidData():
     api = "https://disease.sh/v3/covid-19/all"
@@ -13,13 +15,30 @@ def getCovidData():
     updated_at = json_data['updated']
     date = datetime.datetime.fromtimestamp(updated_at/1e3)
 
-    label.config(text="Total Cases: "+today_cases
+    label.config(text="Today Cases: "+today_cases
                  + "\nToday Deaths: "+today_deaths
-                 + "\nTotal Cases: "+total_cases
-                 + "\nTotal Deaths: "+total_deaths
-                 + "\nToday Recovered: "+today_recovered)
+                 + "\nToday Recovered: "+today_recovered
+                 + "\n\nTotal Cases: " + total_cases
+                 + "\nTotal Deaths: " + total_deaths)
 
     label2.config(text=date)
+
+    return(date, today_cases, today_deaths, today_recovered, total_cases, total_deaths)
+
+def storeInDatabase(date, today_cases, today_deaths, today_recovered, total_cases, total_deaths):
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="password",
+            database="CoronaVirusSaved"
+        )
+
+        cursor = db.cursor()
+        cursor.execute(f"INSERT INTO tabledb (date, today_cases, today_deaths, today_recovered, total_cases, total_deaths) VALUES ('" + date + "', '" + today_cases + "', '" + today_deaths + "', '" + today_recovered + "', '" + total_cases + "', '" + total_deaths + "')")
+    except Exception as ex:
+        return None
+
 
 canvas = tk.Tk()
 canvas.geometry('400x400')
@@ -29,6 +48,9 @@ f = ("poppins", 15, "bold")
 
 button = tk.Button(canvas, font=f, text="Load", command=getCovidData)
 button.pack(pady=20)
+
+button = tk.Button(canvas, font=f, text="Save", command=storeInDatabase)
+button.pack(pady=1)
 
 label = tk.Label(canvas, font=f)
 label.pack(pady=20)
