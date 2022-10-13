@@ -52,8 +52,8 @@ f = ("poppins", 15, "bold")
 button = tk.Button(canvas, font=f, text="Load", command=getCovidData)
 button.pack(pady=20)
 
-button = tk.Button(canvas, font=f, text="Save", command=storeInDatabase)
-button.pack(pady=20)
+button = tk.Button(canvas, font=f, text="Save",  command=storeInDatabase)
+button.pack(pady=1)
 
 #labels
 label = tk.Label(canvas, font=f)
@@ -63,4 +63,5 @@ label2 = tk.Label(canvas, font=8)
 label2.pack()
 getCovidData()
 
+#mainloop
 canvas.mainloop()
