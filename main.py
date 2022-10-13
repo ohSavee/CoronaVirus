@@ -4,6 +4,7 @@ import datetime
 import mysql.connector
 
 
+#Get data from api
 def getCovidData():
     api = "https://disease.sh/v3/covid-19/all"
     json_data = requests.get(api).json()
@@ -23,8 +24,9 @@ def getCovidData():
 
     label2.config(text=date)
 
-    return(date, today_cases, today_deaths, today_recovered, total_cases, total_deaths)
+    return date, today_cases, today_deaths, today_recovered, total_cases, total_deaths
 
+#store in database on button click
 def storeInDatabase(date, today_cases, today_deaths, today_recovered, total_cases, total_deaths):
     try:
         db = mysql.connector.connect(
@@ -35,23 +37,25 @@ def storeInDatabase(date, today_cases, today_deaths, today_recovered, total_case
         )
 
         cursor = db.cursor()
-        cursor.execute(f"INSERT INTO tabledb (date, today_cases, today_deaths, today_recovered, total_cases, total_deaths) VALUES ('" + date + "', '" + today_cases + "', '" + today_deaths + "', '" + today_recovered + "', '" + total_cases + "', '" + total_deaths + "')")
+        cursor.execute(f"INSERT INTO saves (date, today_cases, today_deaths, today_recovered, total_cases, total_deaths) VALUES ('" + date + "', '" + today_cases + "', '" + today_deaths + "', '" + today_recovered + "', '" + total_cases + "', '" + total_deaths + "')")
     except Exception as ex:
         return None
 
-
+#create box app
 canvas = tk.Tk()
 canvas.geometry('400x400')
 canvas.title("Corona Tracker")
 
 f = ("poppins", 15, "bold")
 
+#buttons
 button = tk.Button(canvas, font=f, text="Load", command=getCovidData)
 button.pack(pady=20)
 
 button = tk.Button(canvas, font=f, text="Save", command=storeInDatabase)
-button.pack(pady=1)
+button.pack(pady=20)
 
+#labels
 label = tk.Label(canvas, font=f)
 label.pack(pady=20)
 
